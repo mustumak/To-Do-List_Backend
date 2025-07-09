@@ -2,6 +2,7 @@ package com.example.mustafa.TO_DO_LIST.service;
 
 import com.example.mustafa.TO_DO_LIST.dao.TodoDAO;
 import com.example.mustafa.TO_DO_LIST.dao.UserDAO;
+import com.example.mustafa.TO_DO_LIST.dto.ToDoItemResponse;
 import com.example.mustafa.TO_DO_LIST.model.TodoItems;
 import com.example.mustafa.TO_DO_LIST.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,16 @@ public class TodoService {
             User user = userDAO.findByUsername(username).orElseThrow();
 
             todoList = todoDAO.findByUser(user);
+
+//            List<ToDoItemResponse> resp = new ArrayList<>();
+//            for(TodoItems todoItem: todoList){
+//                resp.add(new ToDoItemResponse(todoItem.getId(),todoItem.getTitle(),todoItem.getDescription(),
+//                        todoItem.getStatus(),todoItem.getCreatedAt(),todoItem.getDueDate()));
+//            }
+
+            List<ToDoItemResponse> responses = todoList.stream()
+                    .map(ToDoItemResponse::new)
+                    .toList();
 
             if(todoList.isEmpty()){
                 System.out.println("No todo items to show");
