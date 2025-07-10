@@ -27,4 +27,11 @@ public class TodoItems {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @PrePersist
+    protected void onCreate(){
+        this.setCreatedAt(LocalDate.now());
+        if(this.status == null)
+            this.setStatus("Pending");
+    }
+
 }

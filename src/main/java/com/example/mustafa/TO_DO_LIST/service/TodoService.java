@@ -79,12 +79,54 @@ public class TodoService {
     }
 
     private TodoItems updateToDo(TodoItems oldTodo, @Valid TodoItems newTodo) {
-        oldTodo.setTitle(newTodo.getTitle());
-        oldTodo.setDescription(newTodo.getDescription());
-        oldTodo.setStatus(newTodo.getStatus());
-        oldTodo.setDueDate(newTodo.getDueDate());
-
+        try {
+            oldTodo.setTitle(newTodo.getTitle());
+            oldTodo.setDescription(newTodo.getDescription());
+            oldTodo.setStatus(newTodo.getStatus());
+            oldTodo.setDueDate(newTodo.getDueDate());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return oldTodo;
     }
 
+    public void deleteTodoItem(int id) {
+        try {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userDAO.findByUsername(username).orElseThrow();
+            TodoItems todo = todoDAO.findById(id).orElseThrow();
+
+            if (user.getId() == todo.getUser().getId()){
+                todoDAO.deleteById(id);
+            }else {
+                throw new AccessDeniedException("You can only delete your own Todo Item");
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void toggleStatus(int id) {
+        try{
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userDAO.findByUsername(username).orElseThrow();
+            TodoItems todo = todoDAO.findById(id).orElseThrow();
+
+            if (user.getId() == todo.getUser().getId()){
+
+                if("Completed".equalsIgnoreCase(todo.getStatus()))
+                    todo.setStatus("Pending");
+                else
+                    todo.setStatus("Completed");
+
+                todoDAO.save(todo);
+            }else {
+                throw new AccessDeniedException("Not your Todo");
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

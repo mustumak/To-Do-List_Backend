@@ -39,7 +39,7 @@ public class ToDoController {
     }
 
     @PutMapping("todo/{id}")
-    public ResponseEntity<String> updateTodoItems(@Valid @RequestBody TodoItems todoItems, @PathVariable int id){
+    public ResponseEntity<String> updateTodoItem(@Valid @RequestBody TodoItems todoItems, @PathVariable int id){
         try{
             todoService.updateTodoItems(todoItems,id);
             return new ResponseEntity<>("ToDo item updated Successfully.",HttpStatus.CREATED);
@@ -51,5 +51,30 @@ public class ToDoController {
             return new ResponseEntity<>("Internal Server Error", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    @DeleteMapping("todo/{id}")
+    public ResponseEntity<String> deleteTodoItem(@PathVariable int id){
+        try{
+            todoService.deleteTodoItem(id);
+            return new ResponseEntity<>("ToDo item deleted Successfully.",HttpStatus.OK);
+        } catch (AccessDeniedException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while deleting ToDo item");
+        }
+    }
+
+    @PatchMapping("todo/{id}/toggle")
+    public ResponseEntity<String> toggleStatus(@PathVariable int id){
+        try{
+            todoService.toggleStatus(id);
+            return new ResponseEntity<>("Status Changed",HttpStatus.OK);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
 }
