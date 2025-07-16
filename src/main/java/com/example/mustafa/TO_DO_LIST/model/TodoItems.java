@@ -30,7 +30,7 @@ public class TodoItems {
     @PrePersist
     protected void onCreate(){
         this.setCreatedAt(LocalDate.now());
-        if(this.status == null)
+        if(this.status == null || this.status.isEmpty())
             this.setStatus("Pending");
     }
 
